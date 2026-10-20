@@ -1,5 +1,6 @@
 
 import sqlite3
+from datetime import date
 
 
 DATABASE = "blog.db"
@@ -146,6 +147,52 @@ def get_tag(tag_id):
         """, (tag_id,)).fetchone()
 
         return dict(tag) if tag else None
+
+    finally:
+        connection.close()
+
+
+
+def create_post(title, body, tag_ids):
+    connection = get_connection()
+
+    try:
+        cursor = connection.execute("""
+            INSERT INTO posts (title, body, published_date)
+            VALUES (?, ?, ?)
+        """, (title, body, date.today().isoformat()))
+
+        post_id = cursor.lastrowid
+
+        for tag_id in tag_ids:
+            connection.execute("""
+                INSERT INTO post_tags (post_id, tag_id)
+                VALUES (?, ?)
+            """, (post_id, tag_id))
+
+        connection.commit()
+        return post_id
+
+    except sqlite3.Error:
+        connection.rollback()
+        raise
+
+    finally:
+        connection.close()
+
+
+
+def get_all_tags():
+    connection = get_connection()
+
+    try:
+        tags = connection.execute("""
+            SELECT id, name
+            FROM tags
+            ORDER BY name
+        """).fetchall()
+
+        return [dict(tag) for tag in tags]
 
     finally:
         connection.close()

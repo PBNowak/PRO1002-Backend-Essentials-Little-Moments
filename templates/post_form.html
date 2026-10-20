@@ -1,0 +1,71 @@
+
+{% extends "base.html" %}
+
+{% block title %}Create New Post - Little Moments{% endblock %}
+
+{% block content %}
+
+<section>
+    <h2>Create New Blog Post</h2>
+
+    {% if error %}
+        <p role="alert">{{ error }}</p>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('new_post') }}">
+
+        <div>
+            <label for="title">Post Title</label>
+            <input
+                type="text"
+                id="title"
+                name="title"
+                value="{{ title }}"
+                maxlength="200"
+                required
+            >
+        </div>
+
+        <div>
+            <label for="body">Blog Content</label>
+            <textarea
+                id="body"
+                name="body"
+                rows="10"
+                required
+            >{{ body }}</textarea>
+        </div>
+
+        
+<fieldset>
+    <legend>Choose Tags</legend>
+
+    {% for tag in tags %}
+        <div>
+            
+<input
+    type="checkbox"
+    id="tag-{{ tag.id }}"
+    name="tags"
+    value="{{ tag.id }}"
+    {% if tag.id|string in selected_tags %}checked{% endif %}
+>
+
+            <label for="tag-{{ tag.id }}">
+                {{ tag.name }}
+            </label>
+        </div>
+    {% endfor %}
+</fieldset>
+
+        <button type="submit">Publish Post</button>
+
+    </form>
+
+    <p>
+        <a href="{{ url_for('home') }}">Cancel and return home</a>
+    </p>
+
+</section>
+
+{% endblock %}
