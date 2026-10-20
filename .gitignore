@@ -1,0 +1,17 @@
+
+# Python virtual environment
+.venv/
+
+# Python cache files
+__pycache__/
+*.pyc
+
+# Environment variables and secrets
+.env
+
+# Local SQLite databases
+*.db
+*.sqlite3
+
+# Test cache
+.pytest_cache/
