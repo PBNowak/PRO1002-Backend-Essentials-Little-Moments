@@ -5,17 +5,31 @@
 
 {% block content %}
 
-    <section>
-        <h2>Welcome to Little Moments</h2>
-        <p>
-            A cozy corner for stories about nature,
-            simple living, and everyday experiences.
-        </p>
-    </section>
+<section>
+    <h2>Welcome to Little Moments</h2>
+    <p>
+        A cozy corner for stories about nature,
+        simple living, and everyday experiences.
+    </p>
+</section>
 
-    <section>
-        <h2>Latest Blog Posts</h2>
-        <p>Our stories will appear here soon!</p>
-    </section>
+<section>
+    <h2>Latest Blog Posts</h2>
+
+    {% for post in posts %}
+        <article>
+            <h3>{{ post.title }}</h3>
+
+            <p>Published: {{ post.published_date }}</p>
+
+            <p>{{ post.body[:150] }}...</p>
+
+            <hr>
+        </article>
+    {% else %}
+        <p>No blog posts available yet.</p>
+    {% endfor %}
+
+</section>
 
 {% endblock %}

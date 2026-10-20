@@ -49,6 +49,21 @@ def seed_db():
         connection.close()
 
 
+def get_all_posts():
+    connection = get_connection()
+
+    try:
+        posts = connection.execute("""
+            SELECT id, title, body, published_date
+            FROM posts
+            ORDER BY published_date DESC, id DESC
+        """).fetchall()
+
+        return [dict(post) for post in posts]
+
+    finally:
+        connection.close()
+
 
 if __name__ == "__main__":
     init_db()
