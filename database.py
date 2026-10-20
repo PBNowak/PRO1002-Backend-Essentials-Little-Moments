@@ -198,6 +198,37 @@ def get_all_tags():
         connection.close()
 
 
+def update_post(post_id, title, body, tag_ids):
+    connection = get_connection()
+
+    try:
+        connection.execute("""
+            UPDATE posts
+            SET title = ?, body = ?
+            WHERE id = ?
+        """, (title, body, post_id))
+
+        connection.execute("""
+            DELETE FROM post_tags
+            WHERE post_id = ?
+        """, (post_id,))
+
+        for tag_id in tag_ids:
+            connection.execute("""
+                INSERT INTO post_tags (post_id, tag_id)
+                VALUES (?, ?)
+            """, (post_id, tag_id))
+
+        connection.commit()
+
+    except sqlite3.Error:
+        connection.rollback()
+        raise
+
+    finally:
+        connection.close()
+
+
 if __name__ == "__main__":
     init_db()
     seed_db()
