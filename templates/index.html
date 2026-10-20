@@ -22,9 +22,15 @@
 
             <p>Published: {{ post.published_date }}</p>
 
-            <p>{{ post.body[:150] }}...</p>
+            
+<p>{{ post.body[:150] }}...</p>
 
-            <hr>
+<a href="{{ url_for('post_detail', post_id=post.id) }}">
+    Read More →
+</a>
+
+<hr>
+
         </article>
     {% else %}
         <p>No blog posts available yet.</p>
