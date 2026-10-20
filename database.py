@@ -49,6 +49,7 @@ def seed_db():
         connection.close()
 
 
+
 def get_all_posts():
     connection = get_connection()
 
@@ -59,7 +60,23 @@ def get_all_posts():
             ORDER BY published_date DESC, id DESC
         """).fetchall()
 
-        return [dict(post) for post in posts]
+        result = []
+
+        for post in posts:
+            post_data = dict(post)
+
+            tags = connection.execute("""
+                SELECT tags.id, tags.name
+                FROM tags
+                JOIN post_tags ON tags.id = post_tags.tag_id
+                WHERE post_tags.post_id = ?
+                ORDER BY tags.name
+            """, (post["id"],)).fetchall()
+
+            post_data["tags"] = [dict(tag) for tag in tags]
+            result.append(post_data)
+
+        return result
 
     finally:
         connection.close()
@@ -76,6 +93,59 @@ def get_post(post_id):
         """, (post_id,)).fetchone()
 
         return dict(post) if post else None
+
+    finally:
+        connection.close()
+
+
+def get_tags_for_post(post_id):
+    connection = get_connection()
+
+    try:
+        tags = connection.execute("""
+            SELECT tags.id, tags.name
+            FROM tags
+            JOIN post_tags ON tags.id = post_tags.tag_id
+            WHERE post_tags.post_id = ?
+            ORDER BY tags.name
+        """, (post_id,)).fetchall()
+
+        return [dict(tag) for tag in tags]
+
+    finally:
+        connection.close()
+
+
+def get_posts_by_tag(tag_id):
+    connection = get_connection()
+
+    try:
+        posts = connection.execute("""
+            SELECT posts.id, posts.title, posts.body,
+                   posts.published_date
+            FROM posts
+            JOIN post_tags ON posts.id = post_tags.post_id
+            WHERE post_tags.tag_id = ?
+            ORDER BY posts.published_date DESC, posts.id DESC
+        """, (tag_id,)).fetchall()
+
+        return [dict(post) for post in posts]
+
+    finally:
+        connection.close()
+
+
+def get_tag(tag_id):
+    connection = get_connection()
+
+    try:
+        tag = connection.execute("""
+            SELECT id, name
+            FROM tags
+            WHERE id = ?
+        """, (tag_id,)).fetchone()
+
+        return dict(tag) if tag else None
 
     finally:
         connection.close()

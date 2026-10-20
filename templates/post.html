@@ -13,6 +13,21 @@
     <div>
         <p>{{ post.body }}</p>
     </div>
+    
+
+<div>
+    <h3>Tags</h3>
+
+    {% for tag in tags %}
+        <a href="{{ url_for('tag_posts', tag_id=tag.id) }}">
+            {{ tag.name }}
+        </a>
+    {% else %}
+        <p>No tags available.</p>
+    {% endfor %}
+</div>
+
+
 </article>
 
 <p>

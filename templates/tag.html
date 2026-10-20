@@ -1,0 +1,38 @@
+
+{% extends "base.html" %}
+
+
+{% block title %}{{ tag.name }} - Little Moments{% endblock %}
+
+
+{% block content %}
+
+<section>
+    
+<h2>Posts tagged: {{ tag.name }}</h2>
+
+
+    {% for post in posts %}
+        <article>
+            <h3>{{ post.title }}</h3>
+
+            <p>Published: {{ post.published_date }}</p>
+
+            <p>{{ post.body[:150] }}...</p>
+
+            <a href="{{ url_for('post_detail', post_id=post.id) }}">
+                Read More →
+            </a>
+
+            <hr>
+        </article>
+    {% else %}
+        <p>No posts found for this tag.</p>
+    {% endfor %}
+
+    <p>
+        <a href="{{ url_for('home') }}">← Back to all posts</a>
+    </p>
+</section>
+
+{% endblock %}
