@@ -37,6 +37,61 @@
 
 </article>
 
+
+<section>
+    <h3>Comments</h3>
+
+    {% for comment in comments %}
+        <article>
+            <h4>{{ comment.title }}</h4>
+
+            <p>Posted: {{ comment.created_date }}</p>
+
+            <p>{{ comment.body }}</p>
+        </article>
+
+        <hr>
+    {% else %}
+        <p>No comments yet. Be the first to comment!</p>
+    {% endfor %}
+    
+<h3>Leave a Comment</h3>
+
+{% if comment_error %}
+    <p role="alert">{{ comment_error }}</p>
+{% endif %}
+
+<form method="POST"
+      action="{{ url_for('add_comment', post_id=post.id) }}">
+
+    <div>
+        <label for="comment-title">Comment Title</label>
+        <input
+            type="text"
+            id="comment-title"
+            name="title"
+            value="{{ comment_title|default('', true) }}"
+            maxlength="200"
+            required
+        >
+    </div>
+
+    <div>
+        <label for="comment-body">Your Comment</label>
+        <textarea
+            id="comment-body"
+            name="body"
+            rows="5"
+            required
+        >{{ comment_body|default('', true) }}</textarea>
+    </div>
+
+    <button type="submit">Post Comment</button>
+
+</form>
+
+</section>
+
 <p>
     <a href="{{ url_for('home') }}">← Back to all posts</a>
 </p>

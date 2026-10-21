@@ -228,6 +228,48 @@ def update_post(post_id, title, body, tag_ids):
     finally:
         connection.close()
 
+def get_comments_for_post(post_id):
+    connection = get_connection()
+
+    try:
+        comments = connection.execute("""
+            SELECT id, post_id, title, body, created_date
+            FROM comments
+            WHERE post_id = ?
+            ORDER BY created_date DESC, id DESC
+        """, (post_id,)).fetchall()
+
+        return [dict(comment) for comment in comments]
+
+    finally:
+        connection.close()
+
+def create_comment(post_id, title, body):
+    connection = get_connection()
+
+    try:
+        cursor = connection.execute("""
+            INSERT INTO comments (
+                post_id, title, body, created_date
+            )
+            VALUES (?, ?, ?, ?)
+        """, (
+            post_id,
+            title,
+            body,
+            date.today().isoformat()
+        ))
+
+        connection.commit()
+        return cursor.lastrowid
+
+    except sqlite3.Error:
+        connection.rollback()
+        raise
+
+    finally:
+        connection.close()
+
 
 if __name__ == "__main__":
     init_db()

@@ -13,7 +13,9 @@ from database import (
     get_tag,
     create_post,
     get_all_tags,
-    update_post
+    update_post,
+    get_comments_for_post,
+    create_comment
 )
 
 
@@ -30,6 +32,7 @@ def home():
 
 
 
+
 @app.route("/post/<int:post_id>")
 def post_detail(post_id):
     post = get_post(post_id)
@@ -38,12 +41,15 @@ def post_detail(post_id):
         abort(404)
 
     tags = get_tags_for_post(post_id)
+    comments = get_comments_for_post(post_id)
 
     return render_template(
         "post.html",
         post=post,
-        tags=tags
+        tags=tags,
+        comments=comments
     )
+
 
 
 
@@ -163,6 +169,34 @@ def edit_post(post_id):
         editing=True,
         post_id=post_id
     )
+
+@app.route("/post/<int:post_id>/comment", methods=["POST"])
+def add_comment(post_id):
+    post = get_post(post_id)
+
+    if post is None:
+        abort(404)
+
+    title = request.form.get("title", "").strip()
+    body = request.form.get("body", "").strip()
+
+    if not title or not body:
+        error = "Please fill in both the comment title and message."
+    elif len(title) > 200:
+        error = "The comment title must be 200 characters or fewer."
+    else:
+        create_comment(post_id, title, body)
+        return redirect(url_for("post_detail", post_id=post_id))
+
+    return render_template(
+        "post.html",
+        post=post,
+        tags=get_tags_for_post(post_id),
+        comments=get_comments_for_post(post_id),
+        comment_title=title,
+        comment_body=body,
+        comment_error=error
+    ), 400
 
 
 if __name__ == "__main__":
